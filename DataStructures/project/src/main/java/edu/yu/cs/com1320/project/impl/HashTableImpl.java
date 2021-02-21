@@ -93,7 +93,6 @@ public class HashTableImpl<Key, Value> implements HashTable<Key, Value> {
 
         //if slot was empty create first node in the slot
         if (this.table[slot] == null){
-            System.out.println("K will be placed in slot:" + slot);
             this.table[slot] = newNode;
           //since the item has no previous item at slot, return null
             return null;
@@ -108,7 +107,7 @@ public class HashTableImpl<Key, Value> implements HashTable<Key, Value> {
         }
 
         //if slot already had a value, iterate to first null slot within the linked list and insert Node
-        System.out.println("K was full, we are placing in the next slot in the link list " + slot);
+       // System.out.println("K was full, we are placing in the next slot in the link list " + slot);
          previous = this.table[slot];
         while(previous.next != null ){
             if(previous.next.k == k){
