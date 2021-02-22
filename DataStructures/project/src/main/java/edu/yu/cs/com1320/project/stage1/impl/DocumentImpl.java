@@ -16,7 +16,7 @@ public class DocumentImpl implements Document {
             throw new IllegalArgumentException();
         }
 
-        if(uri == null){
+        if(uri == null || uri.equals((URI.create("")))){
             throw new IllegalArgumentException();
         }
         this.uri = uri;
@@ -32,9 +32,10 @@ public class DocumentImpl implements Document {
         if(binaryData == null || binaryData.equals(emptyArray)){
             throw new IllegalArgumentException();
         }
-        if(uri == null){
+        if(uri == null|| uri == (URI.create(""))){
             throw new IllegalArgumentException();
         }
+
 
         this.uri = uri;
         this.binaryData = binaryData;
@@ -54,6 +55,7 @@ public class DocumentImpl implements Document {
         return this.uri;
     }
 
+    //overide hashCode method
     @Override
     public int hashCode() {
         int result = uri.hashCode();
@@ -62,7 +64,18 @@ public class DocumentImpl implements Document {
         return result;
     }
 
-       //create a override method for .equals where two documents are cosnidered equal if they share the same hashcode
+    //create a override method for .equals where two documents are cosnidered equal if they share the same hashcode
+    @Override
+    public boolean equals(Object o){
+        if(this.hashCode() == o.hashCode()){
+            return true;
+        }
+        if(this.toString() == o.toString() && this.toString() == null){
+            return true;
+        }
+        return false;
+    }
+
 
 
 }

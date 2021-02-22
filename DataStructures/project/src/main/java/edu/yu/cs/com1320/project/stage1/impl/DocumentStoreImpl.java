@@ -13,6 +13,8 @@ import java.net.URI;
 
 public class DocumentStoreImpl implements DocumentStore {
 
+
+
     //create a hashTable object to store all the documents
     HashTable docTable = new HashTableImpl();
 
@@ -43,7 +45,7 @@ public class DocumentStoreImpl implements DocumentStore {
 
         //document creation for a txt type document
         if (format.equals(DocumentFormat.TXT)) {
-            System.out.println("txt");
+            //System.out.println("txt");
             String txt = new String(inputRead);
             if(txt ==null || uri == null){
                 throw new IllegalArgumentException("the txt is blank");
@@ -59,7 +61,7 @@ public class DocumentStoreImpl implements DocumentStore {
         //document creation for a byte type document
         if (format.equals(DocumentFormat.BINARY)) {
             //create a document of type byte
-            System.out.println("byte");
+           // System.out.println("byte");
            // if(inputRead ==null || uri == null){
             //    throw new IllegalArgumentException();
            // }
@@ -80,7 +82,7 @@ public class DocumentStoreImpl implements DocumentStore {
 
     //
     public boolean deleteDocument(URI uri) {
-        if (docTable.get(uri).equals(null)) {
+        if (docTable.get(uri) == null) {
             return false;
         }
         docTable.put(uri,null);
