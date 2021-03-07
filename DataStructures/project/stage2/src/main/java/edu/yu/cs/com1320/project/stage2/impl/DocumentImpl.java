@@ -1,6 +1,7 @@
-package edu.yu.cs.com1320.project.stage1.impl;
+package edu.yu.cs.com1320.project.stage2.impl;
 
-import edu.yu.cs.com1320.project.stage1.Document;
+
+import edu.yu.cs.com1320.project.stage2.Document;
 
 import java.net.URI;
 import java.util.Arrays;
@@ -67,6 +68,9 @@ public class DocumentImpl implements Document {
     //create a override method for .equals where two documents are cosnidered equal if they share the same hashcode
     @Override
     public boolean equals(Object o){
+        if( o == null){
+            return true;
+        }
         if(this.hashCode() == o.hashCode()){
             return true;
         }

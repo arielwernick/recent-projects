@@ -27,6 +27,10 @@ public class DocumentStoreImpl implements DocumentStore {
     public int putDocument(InputStream input, URI uri, DocumentFormat format) throws IOException {
         //create int variable to save the return variable.
         int returnValue;
+        URI compare = null;
+        if(uri == compare){
+            throw new IllegalArgumentException();
+        }
        //if the uri is not already in the system return 0
         if (docTable.get(uri) == null) {
             returnValue = 0;
@@ -44,6 +48,9 @@ public class DocumentStoreImpl implements DocumentStore {
         }
 
         //document creation for a txt type document
+        if(format == null){
+            throw new IllegalArgumentException();
+        }
         if (format.equals(DocumentFormat.TXT)) {
             //System.out.println("txt");
             String txt = new String(inputRead);

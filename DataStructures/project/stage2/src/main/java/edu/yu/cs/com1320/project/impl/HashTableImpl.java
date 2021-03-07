@@ -76,12 +76,12 @@ public class HashTableImpl<Key, Value> implements HashTable<Key, Value> {
         //hash the key to find the slot in the hashTable and store in variable slot.
         //System.out.println("THIS IS THE LOAD FACTRO: "+loadFactor);
        // System.out.println("this is the table size:  "+ table.length);
-        if(loadFactor >= table.length){
+        if(loadFactor >= table.length *.75){
             reSizeHashTable();
         }
         int slot = (k.hashCode() & 0x7fffffff) % table.length;
         loadFactor += 1;
-        System.out.println(loadFactor);
+        System.out.println("Load Factor: " + loadFactor);
 
         //create new Node with the k,v pair provided
         Node<Key, Value> newNode = new Node<>(k, v);
@@ -91,8 +91,8 @@ public class HashTableImpl<Key, Value> implements HashTable<Key, Value> {
         //return to fix - not sure it is working correctly
         if (v == null) {
             loadFactor -= 1;
-            System.out.println(slot);
-            System.out.println(this.table[slot].k);
+            System.out.println("Slot to be palced in "+ slot);
+            System.out.println("Slot hashCode" + this.table[slot].k);
             if (this.table[slot].k.equals(k)) {
                 this.table[slot] = this.table[slot].next;
             }
