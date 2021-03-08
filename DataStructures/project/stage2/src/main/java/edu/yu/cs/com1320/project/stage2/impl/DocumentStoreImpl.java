@@ -29,7 +29,7 @@ public class DocumentStoreImpl implements DocumentStore {
     public int putDocument(InputStream input, URI uri, DocumentFormat format) throws IOException {
         //create int variable to save the return variable.
         int returnValue = 0;
-        Document doc = null;
+        Document doc;
         if(uri == null){
             throw new IllegalArgumentException();
         }
@@ -40,15 +40,17 @@ public class DocumentStoreImpl implements DocumentStore {
             byte[] inputRead = input.readAllBytes();
             Document holder = (Document)docTable.get(uri);
             deleteForUndo(uri);
+            //System.out.println("IF the URI is deleted this should say null: " + getDocument(uri));
             if(format.equals(DocumentFormat.TXT)){
-                createTextDocument(uri,inputRead);
+                doc = createTextDocument(uri,inputRead);
+            }else if (format.equals(DocumentFormat.BINARY)){
+               doc =  createByteDocument(uri,inputRead);
+            }else{
+                throw new IllegalArgumentException();
             }
-            if(format.equals(DocumentFormat.BINARY)){
-                createByteDocument(uri,inputRead);
-            }
-            docTable.put(uri,doc);
+            putForUndo(uri,doc);
             Command command = new Command(uri,uri1 ->overwrite(uri,holder));
-            command.undo();
+            history.push(command);
             return returnValue;
 
         }
@@ -64,26 +66,19 @@ public class DocumentStoreImpl implements DocumentStore {
             deleteDocument(uri);
         }
 
-        //document creation for a txt type document
-        if(format == null){
-            throw new IllegalArgumentException();
-        }
+
         if (format.equals(DocumentFormat.TXT)) {
            doc =  createTextDocument(uri,inputRead);
-        }
-
-
-
-        //document creation for a byte type document
-        if (format.equals(DocumentFormat.BINARY)) {
+        }else if(format.equals(DocumentFormat.BINARY)) {
            doc =  createByteDocument(uri,inputRead);
+        }else{
+            throw new IllegalArgumentException();
         }
 
         docTable.put(uri, doc);
 
         Command command = new Command(uri,uri1 ->deleteForUndo(uri));
         history.push(command);
-        System.out.println(history.peek());
         return returnValue;
 
 
@@ -118,6 +113,7 @@ public class DocumentStoreImpl implements DocumentStore {
             return false;
         }
         Document previousDoc = (Document) docTable.get(uri);
+
         docTable.put(uri,null);
         Command command = new Command(uri,uri1 ->putForUndo(uri,previousDoc));
         history.push(command);
@@ -133,7 +129,7 @@ public class DocumentStoreImpl implements DocumentStore {
 
         docTable.put(uri,doc);
 
-        return false;
+        return true;
     }
 
     private boolean overwrite(URI uri, Document doc) {

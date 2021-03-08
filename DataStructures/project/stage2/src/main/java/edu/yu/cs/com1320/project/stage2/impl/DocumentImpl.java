@@ -41,6 +41,7 @@ public class DocumentImpl implements Document {
         this.uri = uri;
         this.binaryData = binaryData;
     }
+
     public String getDocumentTxt() {
 
         return this.txt;

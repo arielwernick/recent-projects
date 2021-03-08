@@ -4,6 +4,7 @@ import edu.yu.cs.com1320.project.Command;
 import edu.yu.cs.com1320.project.Stack;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.EmptyStackException;
 import java.util.function.Function;
 

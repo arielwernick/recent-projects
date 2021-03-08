@@ -81,31 +81,37 @@ public class HashTableImpl<Key, Value> implements HashTable<Key, Value> {
         }
         int slot = (k.hashCode() & 0x7fffffff) % table.length;
         loadFactor += 1;
-        System.out.println("Load Factor: " + loadFactor);
+       // System.out.println("Load Factor: " + loadFactor);
 
-        //create new Node with the k,v pair provided
-        Node<Key, Value> newNode = new Node<>(k, v);
+
         Node previous;
         Node temp;
         //if the Value for K was null, delete the item from the hashTable.
         //return to fix - not sure it is working correctly
         if (v == null) {
-            loadFactor -= 1;
-            System.out.println("Slot to be palced in "+ slot);
+            loadFactor -= 2;
+           // System.out.println("Slot to be palced in "+ slot);
             System.out.println("Slot hashCode" + this.table[slot].k);
             if (this.table[slot].k.equals(k)) {
                 this.table[slot] = this.table[slot].next;
+                return null;
             }
+
+
+
             previous = this.table[slot];
             if (previous != null) {
                 while (previous.next != null) {
                     if (previous.next.equals(k)) {
                         previous.next = previous.next.next;
+                        return null;
                     }
                 }
             }
             }
 
+        //create new Node with the k,v pair provided
+        Node<Key, Value> newNode = new Node<>(k, v);
             //if slot was empty create first node in the slot
             if (this.table[slot] == null) {
                 this.table[slot] = newNode;

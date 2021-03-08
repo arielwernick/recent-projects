@@ -25,7 +25,6 @@ class DocumentStoreStageTwoTests {
         ByteArrayInputStream stream1 = new ByteArrayInputStream(array1);
         ByteArrayInputStream stream11 = new ByteArrayInputStream(array1);
         URI uri1 = new URI("3109458419");
-        //store.putDocument(stream1, uri1, DocumentFormat.BINARY);
         assertEquals(0, store.putDocument(stream1, uri1, DocumentFormat.BINARY));
         Document doc = new DocumentImpl(uri1, stream11.readAllBytes());
         assertEquals(doc, store.getDocument(uri1));
@@ -60,23 +59,47 @@ class DocumentStoreStageTwoTests {
         assertEquals(null, store.getDocument(uri1));
         assertEquals(doc2, store.getDocument(uri2));
     }
+
+    @Test
+    void testStackUndoPut() throws IOException, URISyntaxException {
+        DocumentStoreImpl store = new DocumentStoreImpl();
+        String str1 = "1";
+        String str2 = "ba ba black sheep";
+        byte[] array1 = str1.getBytes();
+        byte[] array2 = str2.getBytes();
+        ByteArrayInputStream stream1 = new ByteArrayInputStream(array1);
+        ByteArrayInputStream stream11 = new ByteArrayInputStream(array1);
+        ByteArrayInputStream streamtwo = new ByteArrayInputStream(array2);
+        URI uri1 = new URI("1");
+        assertEquals(0, store.putDocument(stream1, uri1, DocumentFormat.BINARY));
+        Document doc = new DocumentImpl(uri1, stream11.readAllBytes());
+        Document doc2 = new DocumentImpl(uri1,streamtwo.readAllBytes());
+        System.out.println( store.getDocument(uri1).hashCode());
+        System.out.println(doc.hashCode());
+        assertEquals(doc,store.getDocument(uri1));
+        store.putDocument(streamtwo,uri1,DocumentFormat.BINARY);
+        assertEquals(doc,store.getDocument(uri1));
+    }
     @Test
     void testStackUriPutOverwrite() throws IOException, URISyntaxException {
         DocumentStoreImpl store = new DocumentStoreImpl();
-        String str1 = "1"; byte[] array1 = str1.getBytes();
+        String str1 = "humpty dumpty"; byte[] array1 = str1.getBytes();
         ByteArrayInputStream stream1 = new ByteArrayInputStream(array1); ByteArrayInputStream stream11 = new ByteArrayInputStream(array1);
         URI uri = new URI("firstURI");
         assertEquals(0, store.putDocument(stream1, uri, DocumentFormat.BINARY));
         Document doc = new DocumentImpl(uri, stream11.readAllBytes());
         assertEquals(doc, store.getDocument(uri));
-        String str2 = "2"; byte[] array2 = str2.getBytes();
+        String str2 = "Buy me a pony"; byte[] array2 = str2.getBytes();
         ByteArrayInputStream stream2 = new ByteArrayInputStream(array2); ByteArrayInputStream stream22 = new ByteArrayInputStream(array2);
-        assertEquals(doc.hashCode(), store.putDocument(stream2, uri, DocumentFormat.BINARY));
+        assertEquals(doc.hashCode(), store.putDocument(stream22, uri, DocumentFormat.BINARY));
         Document doc2 = new DocumentImpl(uri, stream22.readAllBytes());
-        store.getDocument(uri);
+        System.out.println("this is doc 2: "+ doc2.hashCode());
+        System.out.println("This is doc 1 : "+ doc.hashCode());
+        System.out.println("this is the URI doc: "+ store.getDocument(uri).hashCode());
+        assertEquals(store.getDocument(uri).getDocumentTxt(),doc2.getDocumentTxt());
         assertEquals(doc2, store.getDocument(uri));
         store.undo();
-        assertNotEquals(doc2, store.getDocument(uri));
+       assertNotEquals(doc2, store.getDocument(uri));
         assertEquals(doc, store.getDocument(uri));
         store.undo(); assertEquals(null, store.getDocument(uri));
     }
@@ -89,11 +112,12 @@ class DocumentStoreStageTwoTests {
         assertEquals(0, store.putDocument(stream1, uri, DocumentFormat.BINARY));
         Document doc = new DocumentImpl(uri, stream11.readAllBytes());
         assertEquals(doc, store.getDocument(uri));
-        String str2 = "2"; byte[] array2 = str2.getBytes();
+        String str2 = "five"; byte[] array2 = str2.getBytes();
         ByteArrayInputStream stream2 = new ByteArrayInputStream(array2); ByteArrayInputStream stream22 = new ByteArrayInputStream(array2);
+        store.putDocument(stream2,uri,DocumentFormat.BINARY);
         assertEquals(doc.hashCode(), store.putDocument(stream2, uri, DocumentFormat.BINARY));
         Document doc2 = new DocumentImpl(uri, stream22.readAllBytes());
-        assertEquals(doc2, store.getDocument(uri));
+        assertEquals(doc2.hashCode(), store.getDocument(uri).hashCode());
         assertTrue(store.deleteDocument(uri)); assertEquals(null, store.getDocument(uri));
         String str3 = "3"; byte[] array3 = str3.getBytes();
         ByteArrayInputStream stream3 = new ByteArrayInputStream(array3); ByteArrayInputStream stream33 = new ByteArrayInputStream(array3);

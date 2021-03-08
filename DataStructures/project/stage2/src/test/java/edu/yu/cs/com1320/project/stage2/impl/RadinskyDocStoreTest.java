@@ -112,7 +112,7 @@ public class RadinskyDocStoreTest {
         assertEquals(store.putDocument(new ByteArrayInputStream(second.getBytes()), uri,
                 DocumentFormat.TXT), one.hashCode());
         store.getDocument(uri);
-        //assertEquals(store.getDocument(uri), two);
+        assertEquals(store.getDocument(uri), two);
         store.undo();
         assertEquals(store.getDocument(uri), one);
     }
