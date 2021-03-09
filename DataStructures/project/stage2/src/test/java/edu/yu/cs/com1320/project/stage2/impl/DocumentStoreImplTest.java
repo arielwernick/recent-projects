@@ -78,7 +78,8 @@ class DocumentStoreStageTwoTests {
         System.out.println(doc.hashCode());
         assertEquals(doc,store.getDocument(uri1));
         store.putDocument(streamtwo,uri1,DocumentFormat.BINARY);
-        assertEquals(doc2 ,store.getDocument(uri1));
+
+        assertEquals(doc,store.getDocument(uri1));
     }
     @Test
     void testStackUriPutOverwrite() throws IOException, URISyntaxException {
