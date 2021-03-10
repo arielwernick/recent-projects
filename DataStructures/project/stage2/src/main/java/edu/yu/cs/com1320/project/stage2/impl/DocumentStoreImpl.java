@@ -8,6 +8,7 @@ import edu.yu.cs.com1320.project.impl.StackImpl;
 import edu.yu.cs.com1320.project.stage2.Document;
 import edu.yu.cs.com1320.project.stage2.DocumentStore;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -57,7 +58,9 @@ public class DocumentStoreImpl implements DocumentStore {
 
         //read the input from the input stream into a byte array
         if (input == null){
-            throw new IllegalArgumentException();
+            returnValue = docTable.get(uri).hashCode();
+            docTable.put(uri,null);
+            return returnValue;
         }
         byte[] inputRead = input.readAllBytes();
 
@@ -97,7 +100,6 @@ public class DocumentStoreImpl implements DocumentStore {
 
     private Document createByteDocument(URI uri, byte[] inputRead){
         Document doc = new DocumentImpl(uri, inputRead);
-        docTable.put(uri, doc);
         return doc;
     }
 

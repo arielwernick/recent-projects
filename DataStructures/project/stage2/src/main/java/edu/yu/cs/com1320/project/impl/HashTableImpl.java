@@ -80,16 +80,13 @@ public class HashTableImpl<Key, Value> implements HashTable<Key, Value> {
             reSizeHashTable();
         }
         int slot = (k.hashCode() & 0x7fffffff) % table.length;
-        loadFactor += 1;
-       // System.out.println("Load Factor: " + loadFactor);
-
 
         Node previous;
         Node temp;
         //if the Value for K was null, delete the item from the hashTable.
         //return to fix - not sure it is working correctly
         if (v == null) {
-            loadFactor -= 2;
+            loadFactor -= 1;
            // System.out.println("Slot to be palced in "+ slot);
             System.out.println("Slot hashCode" + this.table[slot].k);
             if (this.table[slot].k.equals(k)) {
@@ -115,6 +112,7 @@ public class HashTableImpl<Key, Value> implements HashTable<Key, Value> {
             //if slot was empty create first node in the slot
             if (this.table[slot] == null) {
                 this.table[slot] = newNode;
+                loadFactor +=1;
                 //since the item has no previous item at slot, return null
                 return null;
             }
@@ -135,17 +133,12 @@ public class HashTableImpl<Key, Value> implements HashTable<Key, Value> {
                     temp = previous.next;
                     previous.next = newNode;
                     newNode.next = temp.next;
-                    loadFactor +=1;
                     return (Value) temp.data;
                 }
                 previous = previous.next;
             }
 
             previous.next = newNode;
-
-
-            //return the item of the node previous to the new Node within the linked list.
-            // return (Value)previous.data;
             return null;
         }
 
@@ -161,6 +154,26 @@ public class HashTableImpl<Key, Value> implements HashTable<Key, Value> {
             }
         }
             this.table = doubled;
+            size = doubled.length;
     }
 
+    private Value deleteFromHashTable(Node previous, int slot, Key k) {
+        // System.out.println("Slot hashCode" + this.table[slot].k);
+        if (this.table[slot].k.equals(k)) {
+            this.table[slot] = this.table[slot].next;
+            return null;
+        }
+
+
+        previous = this.table[slot];
+        if (previous != null) {
+            while (previous.next != null) {
+                if (previous.next.equals(k)) {
+                    previous.next = previous.next.next;
+                    return null;
+                }
+            }
+        }
+        return null;
+    }
 }

@@ -12,7 +12,7 @@ import java.util.function.Function;
 public class StackImpl<T> implements Stack<T> {
 
     private class Node <Key,Value>{
-        Key k;
+        Key key;
         Value data;
         Node<Key, Value> next;
 
@@ -22,25 +22,10 @@ public class StackImpl<T> implements Stack<T> {
         }
     }
 
-    public static void main(String[] args) {
-        Stack<Integer> jim = new StackImpl<>();
-        jim.push(5);
-        jim.push(10);
-        for(int i = 1; i<=10; i++){
-            jim.push(i);
-        }
-        System.out.println(jim.peek());
-        System.out.println("Stack Size: " +jim.size());
-        jim.pop();
-        System.out.println(jim.size());
-        String fire = "fire";
 
 
-    }
 
-    public static boolean compute(int x, int y){
-        return true;
-    }
+
     Node head;
     Node temp;
     int stackSize;
