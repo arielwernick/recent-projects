@@ -70,16 +70,17 @@ class DocumentStoreStageTwoTests {
         ByteArrayInputStream stream1 = new ByteArrayInputStream(array1);
         ByteArrayInputStream stream11 = new ByteArrayInputStream(array1);
         ByteArrayInputStream streamtwo = new ByteArrayInputStream(array2);
+        ByteArrayInputStream streamtwotwo = new ByteArrayInputStream(array2);
         URI uri1 = new URI("1");
-        assertEquals(0, store.putDocument(stream1, uri1, DocumentFormat.BINARY));
-        Document doc = new DocumentImpl(uri1, stream11.readAllBytes());
+        assertEquals(0, store.putDocument(stream11, uri1, DocumentFormat.BINARY));
+        Document doc = new DocumentImpl(uri1, stream1.readAllBytes());
         Document doc2 = new DocumentImpl(uri1,streamtwo.readAllBytes());
+        Byte[] bill = new Byte[0];
         System.out.println( store.getDocument(uri1).hashCode());
         System.out.println(doc.hashCode());
         assertEquals(doc,store.getDocument(uri1));
-        store.putDocument(streamtwo,uri1,DocumentFormat.BINARY);
-
-        assertEquals(doc,store.getDocument(uri1));
+        store.putDocument(streamtwotwo,uri1,DocumentFormat.BINARY);
+        assertEquals(doc2,store.getDocument(uri1));
     }
     @Test
     void testStackUriPutOverwrite() throws IOException, URISyntaxException {
@@ -87,17 +88,21 @@ class DocumentStoreStageTwoTests {
         String str1 = "humpty dumpty"; byte[] array1 = str1.getBytes();
         ByteArrayInputStream stream1 = new ByteArrayInputStream(array1); ByteArrayInputStream stream11 = new ByteArrayInputStream(array1);
         URI uri = new URI("firstURI");
-        assertEquals(0, store.putDocument(stream1, uri, DocumentFormat.BINARY));
-        Document doc = new DocumentImpl(uri, stream11.readAllBytes());
+        store.putDocument(stream1, uri, DocumentFormat.BINARY);
+        //assertEquals(0, store.putDocument(stream1, uri, DocumentFormat.BINARY));
+        Document doc = new DocumentImpl(uri, stream1.readAllBytes());
         assertEquals(doc, store.getDocument(uri));
-        String str2 = "Buy me a pony"; byte[] array2 = str2.getBytes();
-        ByteArrayInputStream stream2 = new ByteArrayInputStream(array2); ByteArrayInputStream stream22 = new ByteArrayInputStream(array2);
-        assertEquals(doc.hashCode(), store.putDocument(stream22, uri, DocumentFormat.BINARY));
-        Document doc2 = new DocumentImpl(uri, stream22.readAllBytes());
-        System.out.println("this is doc 2: "+ doc2.hashCode());
-        System.out.println("This is doc 1 : "+ doc.hashCode());
-        System.out.println("this is the URI doc: "+ store.getDocument(uri).hashCode());
-        assertEquals(store.getDocument(uri).getDocumentTxt(),doc2.getDocumentTxt());
+        String str4 = "buy me a pony ";
+        String str2 = "Buy me a pony"; byte[] array2 = str2.getBytes();byte[] arrayf = str4.getBytes();
+        ByteArrayInputStream stream2 = new ByteArrayInputStream(arrayf); ByteArrayInputStream stream22 = new ByteArrayInputStream(array2);
+
+        assertEquals(doc.hashCode(), store.putDocument(stream2, uri, DocumentFormat.BINARY));
+
+        Document doc2 = new DocumentImpl(uri, stream2.readAllBytes());
+        //System.out.println("this is doc 2: "+ doc2.hashCode());
+        //   System.out.println("this is the URI doc: "+ store.getDocument(uri).hashCode());
+
+        store.getDocument(uri);
         assertEquals(doc2, store.getDocument(uri));
         store.undo();
        assertNotEquals(doc2, store.getDocument(uri));
@@ -235,20 +240,8 @@ class DocumentStoreStageTwoTests {
         assertTrue(test);
     }
 
-    @Test
-    void testPointlessDeleteEmptyUndo() throws URISyntaxException {
-        DocumentStoreImpl store = new DocumentStoreImpl();
-        URI uri = new URI("Pizza");
-        assertFalse(store.deleteDocument(uri));
-        store.undo();
-    }
-    @Test
-    void testPointlessDeleteFullUndo() throws URISyntaxException {
-        DocumentStoreImpl store = new DocumentStoreImpl();
-        URI uri = new URI("Pizza");
-        assertFalse(store.deleteDocument(uri));
-        store.undo(uri);
-    }
+
+
     @Test
     void testPointlessPutEmptyUndo() throws URISyntaxException, IOException {
         DocumentStoreImpl store = new DocumentStoreImpl();
@@ -273,5 +266,84 @@ class DocumentStoreStageTwoTests {
         }
         assertTrue(test);
         store.undo(uri);
+    }
+
+    @Test
+    public void undoTestnew() throws IOException {
+        DocumentStore documentStore = new DocumentStoreImpl();
+        Boolean test = false;
+        try {
+            documentStore.undo();
+        } catch (IllegalStateException e) {
+            test = true;
+        }
+        assertEquals(true, test);
+        String string1 = "It was a dark and stormy night";
+        String string2 = "It was the best of times, it was the worst of times";
+        String string3 = "It was a bright cold day in April, and the clocks were striking thirteen";
+        InputStream inputStream1 = new ByteArrayInputStream(string1.getBytes());
+        InputStream inputStream2 = new ByteArrayInputStream(string2.getBytes());
+        InputStream inputStream3 = new ByteArrayInputStream(string3.getBytes());
+        URI uri1 = URI.create("www.wrinkleintime.com");
+
+        documentStore.putDocument(inputStream1, uri1, DocumentFormat.TXT);
+        assertEquals(string1, documentStore.getDocument(uri1).getDocumentTxt());
+        documentStore.putDocument(inputStream2, uri1, DocumentFormat.TXT);
+        assertEquals(string2, documentStore.getDocument(uri1).getDocumentTxt());
+        documentStore.undo();
+        assertEquals(string1, documentStore.getDocument(uri1).getDocumentTxt());
+        documentStore.undo();
+        assertEquals(null, documentStore.getDocument(uri1));
+
+        documentStore.putDocument(inputStream3, uri1, DocumentFormat.TXT);
+        assertEquals(string3, documentStore.getDocument(uri1).getDocumentTxt());
+        documentStore.deleteDocument(uri1);
+        assertEquals(null, documentStore.getDocument(uri1));
+        documentStore.undo();
+        assertEquals(string3, documentStore.getDocument(uri1).getDocumentTxt());
+    }
+    @Test
+    public void testUndofSpecificUri() throws IOException {
+        DocumentStore documentStore = new DocumentStoreImpl();
+
+        String string1 = "It was a dark and stormy night";
+        String string2 = "It was the best of times, it was the worst of times";
+        String string3 = "It was a bright cold day in April, and the clocks were striking thirteen";
+        String string4 = "I am free, no matter what rules surround me.";
+        InputStream inputStream1 = new ByteArrayInputStream(string1.getBytes());
+        InputStream inputStream2 = new ByteArrayInputStream(string2.getBytes());
+        InputStream inputStream3 = new ByteArrayInputStream(string3.getBytes());
+        InputStream inputStream4 = new ByteArrayInputStream(string4.getBytes());
+        URI uri1 = URI.create("www.wrinkleintime.com");
+        URI uri2 = URI.create("www.taleoftwocities.com");
+        URI uri3 = URI.create("www.1984.com");
+
+        documentStore.putDocument(inputStream1, uri1, DocumentFormat.TXT);
+        assertEquals(string1, documentStore.getDocument(uri1).getDocumentTxt());
+        documentStore.putDocument(inputStream2, uri2, DocumentFormat.TXT);
+        assertEquals(string2, documentStore.getDocument(uri2).getDocumentTxt());
+        documentStore.undo(uri1);
+       // assertEquals(null, documentStore.getDocument(uri1));
+        assertEquals(string2, documentStore.getDocument(uri2).getDocumentTxt());
+        documentStore.putDocument(inputStream3, uri1, DocumentFormat.TXT);
+        assertEquals(string3, documentStore.getDocument(uri1).getDocumentTxt());
+        documentStore.putDocument(inputStream4, uri1, DocumentFormat.TXT);
+        assertEquals(string4, documentStore.getDocument(uri1).getDocumentTxt());
+        documentStore.deleteDocument(uri1);
+        assertEquals(null, documentStore.getDocument(uri1));
+        documentStore.undo(uri2);
+        assertEquals(null, documentStore.getDocument(uri2));
+        documentStore.undo();
+        assertEquals(string4, documentStore.getDocument(uri1).getDocumentTxt());
+        documentStore.undo(uri1);
+        assertEquals(string3, documentStore.getDocument(uri1).getDocumentTxt());
+
+        Boolean test = false;
+        try {
+            documentStore.undo(uri3);
+        } catch (IllegalStateException e) {
+            test = true;
+        }
+        assertEquals(true, test);
     }
 }

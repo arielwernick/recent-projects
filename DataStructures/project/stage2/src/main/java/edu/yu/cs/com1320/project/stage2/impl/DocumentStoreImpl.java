@@ -58,8 +58,14 @@ public class DocumentStoreImpl implements DocumentStore {
 
         //read the input from the input stream into a byte array
         if (input == null){
+            if(docTable.get(uri) == null){
+                returnValue = 0;
+                return returnValue;
+            }
             returnValue = docTable.get(uri).hashCode();
+
             docTable.put(uri,null);
+
             return returnValue;
         }
         byte[] inputRead = input.readAllBytes();
@@ -141,7 +147,7 @@ public class DocumentStoreImpl implements DocumentStore {
     }
 
 
-    @Override
+
     public void undo() throws IllegalStateException {
 
         Command five = (Command) history.pop();
@@ -150,13 +156,14 @@ public class DocumentStoreImpl implements DocumentStore {
 
     }
 
-    @Override
+
     public void undo(URI uri) throws IllegalStateException {
         Stack temp = new StackImpl();
         boolean found = false;
         int tracker =0;
         while(found == false){
             Command check = (Command) history.pop();
+
             if(check.getUri()== uri){
                 check.undo();
                 found = true;
