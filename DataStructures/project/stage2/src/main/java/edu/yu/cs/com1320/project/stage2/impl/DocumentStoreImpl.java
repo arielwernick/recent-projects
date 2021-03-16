@@ -128,12 +128,12 @@ public class DocumentStoreImpl implements DocumentStore {
         return true;
     }
 
-    public boolean deleteForUndo(URI uri) {
+    private boolean deleteForUndo(URI uri) {
         docTable.put(uri, null);
         return true;
     }
 
-    public boolean putForUndo(URI uri, Document doc)  {
+    private boolean putForUndo(URI uri, Document doc)  {
 
         docTable.put(uri,doc);
 
@@ -151,6 +151,9 @@ public class DocumentStoreImpl implements DocumentStore {
     public void undo() throws IllegalStateException {
 
         Command five = (Command) history.pop();
+        if(five == null){
+            throw new IllegalStateException();
+        }
         five.undo();
 
 
@@ -161,9 +164,11 @@ public class DocumentStoreImpl implements DocumentStore {
         Stack temp = new StackImpl();
         boolean found = false;
         int tracker =0;
-        while(found == false){
+        while(found == false || history.pop() == null){
             Command check = (Command) history.pop();
-
+            if(check == null){
+                throw new IllegalStateException();
+            }
             if(check.getUri()== uri){
                 check.undo();
                 found = true;
@@ -172,7 +177,7 @@ public class DocumentStoreImpl implements DocumentStore {
             tracker += 1;
 
         }
-        while(tracker > 0){
+        while(tracker >= 0){
             Command putBack = (Command) temp.pop();
             history.push(putBack);
             tracker -= 1;

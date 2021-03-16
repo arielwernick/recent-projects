@@ -103,6 +103,7 @@ public class HashTableImpl<Key, Value> implements HashTable<Key, Value> {
                         previous.next = previous.next.next;
                         return null;
                     }
+                    previous = previous.next;
                 }
             }
             }

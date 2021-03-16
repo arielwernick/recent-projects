@@ -26,6 +26,7 @@ public class StackImpl<T> implements Stack<T> {
 
 
 
+
     Node head;
     Node temp;
     int stackSize;
@@ -45,7 +46,7 @@ public class StackImpl<T> implements Stack<T> {
 
     public T pop() {
         if(head == null){
-            throw new IllegalStateException();
+            return null;
         }
         temp = head;
         if(head.next == null){
@@ -61,6 +62,9 @@ public class StackImpl<T> implements Stack<T> {
 
 
     public T peek() {
+        if(head ==null){
+            return null;
+        }
         return (T)head.data;
     }
 
