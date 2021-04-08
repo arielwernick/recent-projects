@@ -3,18 +3,16 @@ package edu.yu.cs.com1320.project.stage3.impl;
 
 import edu.yu.cs.com1320.project.impl.HashTableImpl;
 import edu.yu.cs.com1320.project.stage3.Document;
-import org.codehaus.classworlds.ClassWorldReverseAdapter;
+
 
 import java.net.URI;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 public class DocumentImpl implements Document {
     URI uri;
     String txt;
     byte[] binaryData;
+    Set<String> getWordsList = null;
     HashMap< String, Integer> wordMap= new HashMap<>();
     boolean isByte = false;
 
@@ -29,9 +27,8 @@ public class DocumentImpl implements Document {
         }
         this.uri = uri;
         this.txt = txt;
-        for(String word: getWords()){
-            wordMap.put(word,wordCount(word));
-        }
+        this.getWordsList = wordMachine();
+
 
     }
 
@@ -50,6 +47,7 @@ public class DocumentImpl implements Document {
 
         this.uri = uri;
         this.binaryData = binaryData;
+        this.getWordsList = wordMachine();
         isByte= true;
     }
 
@@ -87,15 +85,23 @@ public class DocumentImpl implements Document {
      * @return all the words that appear in the document
      */
     public Set<String> getWords() {
+        return this.getWordsList;
+    }
 
+
+    //method to create wordList and wordMachine
+    private Set<String> wordMachine(){
         Set<String> wordsSet = new HashSet<>();
         if(isByte){return wordsSet;}
+
+        //reformat the text for storage
         String paragraphs = formatForUse(this.txt);
+        //divide paragraphs into words
         String[] wordsInDoc = paragraphs.split(" ");
+
+        //generate wordsMap
         for(String word : wordsInDoc){
             if(!word.equals("")) {
-                System.out.println(word);
-
                 int count = 1;
                 wordsSet.add(word);
                 if (wordMap.containsKey(word)) {
@@ -104,10 +110,11 @@ public class DocumentImpl implements Document {
                 wordMap.put(word, count);
             }
         }
+        //return set of words used
         return wordsSet;
     }
 
-
+    //unclear if public comparator was allowed but this will compare documents to reorganize them
     public int compareTo(String word, Document m2) {
         int result;
         if(this.wordCount(word) > m2.wordCount(word)){
@@ -120,6 +127,7 @@ public class DocumentImpl implements Document {
         return result;
     }
 
+    //reformatting method
     private String formatForUse(String word){
         String paragraphs = word;
         paragraphs = paragraphs.toLowerCase();

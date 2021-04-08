@@ -13,7 +13,8 @@ public class TrieImpl<Value> implements Trie<Value> {
     Node nonNullList = new Node();
     final List<Value> emptyList = Collections.emptyList();
 
-    private static class Node<Value>
+    //nodeBuilder
+    private class Node<Value>
     {
         private List<Value> val = new ArrayList<>();
         private Node[] links = new Node[alphabetSize];
@@ -26,27 +27,33 @@ public class TrieImpl<Value> implements Trie<Value> {
      * add the given value at the given key
      *
      */
-
+    //trie Constructor
     public TrieImpl(){
         root = new Node();
         builder = root;
     }
+
+    //put document in the trie
     public void put(String key, Value val) {
         if(key == null){
             throw new IllegalArgumentException();
         }
         depth += 0;
-
-        key = formatForUse(key);
-
+        if(depth == 0){
+            //format key for searching
+            builder = root;
+            key = formatForUse(key);
+        }
 
 
         //we've reached the last node in the key,
-        //set the value for the key and return the node
+        //set the value for the key and return the
+        //aka basecase
         if (depth == key.length())
         {
             builder.val.add(val);
             depth = 0;
+            //return our reference back to the root of the trie
             builder = root;
 
         }else {
@@ -59,14 +66,21 @@ public class TrieImpl<Value> implements Trie<Value> {
                 slot = c-21;
             }
 
-            if(builder.links[c-96] ==null || builder.links.length == 1) {
+            //node did not previously exist and a new node must be built
+            if(builder.links.length == 1){
+                builder.links = new Node[36];
+            }
+            if(builder.links[slot] ==null) {
                 builder.links[slot] = new Node();
             }
+
+            //iterate down a level
             builder = builder.links[slot];
             this.put(key, val);
         }
     }
 
+    //reformat words to be used
     private String formatForUse(String word){
         String paragraphs = word;
         paragraphs = paragraphs.toLowerCase();
@@ -82,22 +96,21 @@ public class TrieImpl<Value> implements Trie<Value> {
      * @return a List of matching Values, in descending order
      */
     public List<Value> getAllSorted(String key, Comparator<Value> comparator) {
-        if( root == null){
-            return emptyList;
-        }
+       //check for bad parameters given
         if(comparator == null || key ==null){
             throw new IllegalArgumentException();
         }
 
-       builder = getTheBuilder(key);
-        Node found = builder;
+        //find the node we are looking for
+        Node found = getTheBuilder(key);
+
         if(found.val == null){
             return emptyList;
         }
-        builder = null;
 
         List<Value> returnValues = found.val;
 
+        //sort items using a comparator
         returnValues.sort(comparator);
         return returnValues;
     }
@@ -125,10 +138,12 @@ public class TrieImpl<Value> implements Trie<Value> {
             } else {
                 slot = c - 21;
             }
-            if (builder == null || builder.links.length == 1) {
+            if (builder.links.length == 1 || builder == null) {
                 builder.val = emptyList;
                 builder.links = new Node[1];
+                depth = 0;
                 return builder;
+
             }
             builder = builder.links[slot];
             getTheBuilder(key);
@@ -139,41 +154,7 @@ public class TrieImpl<Value> implements Trie<Value> {
 
     }
 
-    private Node<Value> deleteTheParent(String key){
-        Node parent = null;
-        key = formatForUse(key);
-        if(depth == 0){
-            parent = root;
-        }
-        if(depth == key.length()-1){
-            depth = 0;
-            if (parent == null) {
-                nonNullList.val = emptyList;
-                nonNullList.links= new Node[1];
-                parent = nonNullList;
-            }
-            return parent;
-        }else {
-            char c = key.charAt(depth);
-            int slot;
-            depth += 1;
-            if (c >= 96) {
-                slot = c - 96;
-            } else {
-                slot = c - 21;
-            }
-            if (parent == null) {
-                parent.val = emptyList;
-                parent.links = new Node[1];
-                return parent;
-            }
-            parent = parent.links[slot];
-            deleteTheParent(key);
-        }
-        depth = 0;
-        return parent;
 
-    }
 
 
     /**
@@ -186,20 +167,18 @@ public class TrieImpl<Value> implements Trie<Value> {
      * @return a List of all matching Values containing the given prefix, in descending order
      */
     public List<Value> getAllWithPrefixSorted(String prefix, Comparator<Value> comparator) {
-        if( root == null){
-            return emptyList;
-        }
+
         if(comparator == null || prefix ==null){
             throw new IllegalArgumentException();
         }
+
         List<Value> allThePrefix = new ArrayList<>();
         builder = getTheBuilder(prefix);
-        if(builder.links.length == 1 || builder.links == null){
+        if(builder.links.length == 1 ){
             return emptyList;
         }
         allThePrefix = recursiveListAdder(builder,allThePrefix);
         allThePrefix.sort(comparator);
-        builder = root;
         return allThePrefix;
 
     }
@@ -260,27 +239,8 @@ public class TrieImpl<Value> implements Trie<Value> {
         }
         deletedSet.addAll(toDelete.val);
         toDelete.val = null;
-        Node romba = new Node();
         if(checkIfNodeEmpty(toDelete)){
-            //money for it
-            int level = 1;
-            boolean cleanedUp = false;
-            int i = 0;
-
-            while(key.length()>i){
-                if(key.length()>=i) {
-                    level = key.length() - i;
-                }
-                romba = getTheBuilder(key.substring(0,level));
-                if(romba.val == emptyList){
-                    cleanedUp = true;
-
-                }
-                i++;
-            }
-            if(cleanedUp) {
-                romba = null;
-            }
+            deleteTrails(toDelete,key);
         }
         return deletedSet;
     }
@@ -299,6 +259,32 @@ public class TrieImpl<Value> implements Trie<Value> {
         }
     }
 
+    private void deleteTrails(Node toDelete, String key){
+        Node romba = new Node();
+            //money for it
+            int level = 1;
+            boolean cleanedUp = false;
+            int i = 1;
+
+            while (key.length() > i && cleanedUp == false) {
+                if (key.length() >= i) {
+                    level = key.length() - i;
+                }
+                romba = getTheBuilder(key.substring(0, level));
+                if (romba.val.size() == 0) {
+                    cleanedUp = true;
+
+                }
+                i++;
+            }
+            if (cleanedUp) {
+                romba.links = new Node[1];
+                System.out.println(getTheBuilder(key).links.length);
+            }
+
+    }
+
+
     /**
      * Remove the given value from the node of the given key (do not remove the value from other nodes in the Trie)
      *
@@ -314,6 +300,10 @@ public class TrieImpl<Value> implements Trie<Value> {
         for(Object deleter : toDelete.val){
             if(val.equals(deleter)){
                 toDelete.val.remove(deleter);
+                if(toDelete.val.isEmpty()){
+                    checkIfNodeEmpty(toDelete);
+                    deleteTrails(toDelete,key);
+                }
                 return val;
             }
 

@@ -1,9 +1,6 @@
 package edu.yu.cs.com1320.project.stage3.impl;
 
-import edu.yu.cs.com1320.project.GenericCommand;
-import edu.yu.cs.com1320.project.HashTable;
-import edu.yu.cs.com1320.project.Stack;
-import edu.yu.cs.com1320.project.Trie;
+import edu.yu.cs.com1320.project.*;
 import edu.yu.cs.com1320.project.impl.HashTableImpl;
 import edu.yu.cs.com1320.project.impl.StackImpl;
 import edu.yu.cs.com1320.project.impl.TrieImpl;
@@ -24,7 +21,7 @@ public class DocumentStoreImpl implements DocumentStore {
 
     //create a hashTable object to store all the documents
     HashTable docTable = new HashTableImpl();
-    private Stack history = new StackImpl();
+    private Stack history = new StackImpl<Undoable>();
     Trie<Document> trie = new TrieImpl<Document>();
 
     /**
@@ -147,6 +144,8 @@ public class DocumentStoreImpl implements DocumentStore {
     }
 
     private boolean deleteForUndo(URI uri) {
+        Document previousDoc = (Document) docTable.get(uri);
+        deleteDocTrieReferences(previousDoc);
         docTable.put(uri, null);
         return true;
     }
@@ -154,6 +153,9 @@ public class DocumentStoreImpl implements DocumentStore {
     private boolean putForUndo(URI uri, Document doc)  {
 
         docTable.put(uri,doc);
+        for(String word : doc.getWords()){
+            trie.put(word,doc);
+        }
 
         return true;
     }

@@ -1,5 +1,6 @@
 package edu.yu.cs.com1320.project.impl;
 
+import static java.lang.System.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
@@ -50,7 +51,7 @@ public class TrieImplTest {
             trie.put(null, "pickles");
         });
 
-        trie.put("", "peanut butter");
+        trie.put("doc1", "peanut butter");
 
         trie.put("the", "does this work");
         //System.out.println(trie.getAllSorted("the",Comparator.naturalOrder()).size());
@@ -67,8 +68,8 @@ public class TrieImplTest {
             trie.getAllSorted(null, Comparator.naturalOrder());
         });
 
-        System.out.println(trie.getAllSorted("the",Comparator.naturalOrder()));
-        System.out.println(trie.getAllSorted("the",Comparator.reverseOrder()));
+        out.println(trie.getAllSorted("the",Comparator.naturalOrder()));
+        out.println(trie.getAllSorted("the",Comparator.reverseOrder()));
         assertEquals(trie.getAllSorted("", Comparator.naturalOrder()).size(), 0);
 
     }
@@ -94,9 +95,12 @@ public class TrieImplTest {
        //assertTrue(trie.deleteAllWithPrefix("").size()==0);
         assertEquals(trie.getAllWithPrefixSorted("te", Comparator.naturalOrder()).size(), 0);
 
-
-        trie.deleteAllWithPrefix("the");
-        assertEquals(trie.getAllWithPrefixSorted("the", Comparator.naturalOrder()).size(), 0);
+        out.println(trie.getAllWithPrefixSorted("the",Comparator.naturalOrder()).size());
+        trie.deleteAllWithPrefix("th");
+        out.println(trie.getAllWithPrefixSorted("the",Comparator.naturalOrder()).size());
+        trie.put("these","I should take a shower soon");
+        out.println(trie.getAllWithPrefixSorted("the",Comparator.naturalOrder()).size());
+        assertEquals(trie.getAllWithPrefixSorted("the", Comparator.naturalOrder()).size(), 1);
 
     }
     @Test
@@ -106,8 +110,8 @@ public class TrieImplTest {
         });
 
         assertTrue(trie.deleteAll("").size()==0);
+        trie.deleteAllWithPrefix("the");
         trie.deleteAll("the");
-
         assertEquals(trie.getAllSorted("the", Comparator.naturalOrder()).size(), 0);
     }
     @Test
@@ -121,7 +125,7 @@ public class TrieImplTest {
         });
 
         trie.delete("it","hello1");
-        System.out.println(trie.getAllSorted("it" ,Comparator.naturalOrder()));
+        out.println(trie.getAllSorted("it" ,Comparator.naturalOrder()));
 
         assertTrue(trie.delete("", "")==null);
         //Deliberately don't use Integer factory
