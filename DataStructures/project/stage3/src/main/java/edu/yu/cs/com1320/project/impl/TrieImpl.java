@@ -6,7 +6,7 @@ import java.util.*;
 
 public class TrieImpl<Value> implements Trie<Value> {
 
-    private static final int alphabetSize = 36;
+    private static final int alphabetSize = 37;
     private Node root;
     int depth;
     Node builder = new Node();
@@ -67,8 +67,8 @@ public class TrieImpl<Value> implements Trie<Value> {
             }
 
             //node did not previously exist and a new node must be built
-            if(builder.links.length == 1){
-                builder.links = new Node[36];
+            if(builder.links.length != 37){
+                builder.links = new Node[37];
             }
             if(builder.links[slot] ==null) {
                 builder.links[slot] = new Node();

@@ -137,7 +137,11 @@ public class DocumentStoreImpl implements DocumentStore {
     }
 
     private void deleteDocTrieReferences(Document previousDoc){
-        Set<String> docsWords = previousDoc.getWords();
+        Set<String> docsWords = new HashSet<>();
+        System.out.println(previousDoc.getDocumentTxt());
+        if (!previousDoc.getWords().isEmpty()){
+             docsWords = previousDoc.getWords();
+        }
         for(String toDelete : docsWords){
             trie.delete(toDelete, previousDoc);
         }
@@ -169,39 +173,74 @@ public class DocumentStoreImpl implements DocumentStore {
 
 
     public void undo() throws IllegalStateException {
+        Set<GenericCommand> setCommands = new CommandSet();
+        GenericCommand fiveCommand = new GenericCommand(null,null);
+        Object five = history.peek();
+        if(five instanceof CommandSet){
+            setCommands = (CommandSet)history.pop();
+            for(GenericCommand commander: setCommands){
+                commander.undo();
+            }
 
-        GenericCommand five = (GenericCommand) history.pop();
+        }else if(five instanceof GenericCommand){
+            fiveCommand = (GenericCommand)history.pop();
+            fiveCommand.undo();
+        }
+
         if(five == null){
             throw new IllegalStateException();
         }
-        five.undo();
+
 
 
     }
 
 
     public void undo(URI uri) throws IllegalStateException {
+        Set<GenericCommand> setCommands = new CommandSet();
+        GenericCommand fiveCommand = new GenericCommand(null, null);
         Stack temp = new StackImpl();
         boolean found = false;
-        int tracker =0;
-        while(found == false || history.pop() == null){
-            GenericCommand check = (GenericCommand) history.pop();
-            if(check == null){
-                throw new IllegalStateException();
-            }
-            if(check.getTarget()== uri){
-                check.undo();
-                found = true;
-            }
-            temp.push(check);
-            tracker += 1;
+        int tracker = 0;
+        while (found == false || history.pop() != null) {
+            Object five = history.peek();
+            if (five instanceof CommandSet) {
+                setCommands = (CommandSet) history.pop();
+                for (GenericCommand commander : setCommands) {
+                    if (commander == null) {
+                        throw new IllegalStateException();
+                    }
+                    if (commander.getTarget() == uri) {
+                        commander.undo();
+                        found = true;
+                    } else {
+                        temp.push(commander);
+                        tracker += 1;
+                    }
+                }
 
+            }else if (five instanceof GenericCommand) {
+                fiveCommand = (GenericCommand) history.pop();
+
+                if (fiveCommand == null) {
+                    throw new IllegalStateException();
+                }
+                if (fiveCommand.getTarget() == uri) {
+                    fiveCommand.undo();
+                    found = true;
+                }else {
+                    temp.push(fiveCommand);
+                    tracker += 1;
+                }
+            }
         }
-        while(tracker >= 0){
+        while (tracker >= 0) {
             GenericCommand putBack = (GenericCommand) temp.pop();
             history.push(putBack);
             tracker -= 1;
         }
+
+
     }
 
     /**
@@ -213,7 +252,19 @@ public class DocumentStoreImpl implements DocumentStore {
      * @return a List of the matches. If there are no matches, return an empty list.
      */
     public List<Document> search(String keyword) {
-       return null;
+        Comparator<Document> comparator = (o1, o2) -> {
+            int result = o1.compareTo(keyword, o2);
+            return result;
+        };
+
+        List<Document> returnDocuments = trie.getAllSorted(keyword,comparator);
+        Set<Document> toReturn = new HashSet<>();
+        toReturn.addAll(returnDocuments);
+        returnDocuments.clear();
+        returnDocuments.addAll(toReturn);
+        returnDocuments.sort(comparator);
+
+       return returnDocuments;
     }
 
     /**
@@ -283,10 +334,16 @@ public class DocumentStoreImpl implements DocumentStore {
     public Set<URI> deleteAll(String keyword) {
        Set<Document> toDelete =  trie.deleteAll(keyword);
        Set<URI> deleted = new HashSet<>();
+       CommandSet<GenericCommand> deletedAllCommand = new CommandSet();
        for(Document doc : toDelete){
+           Document save = doc;
            docTable.put(doc.getKey(),null);
            deleted.add(doc.getKey());
+           GenericCommand command = new GenericCommand(doc.getKey(),uri1 ->putForUndo(doc.getKey(),save));
+           deletedAllCommand.addCommand(command);
        }
+       history.push(deletedAllCommand);
+      // for()
 
 
         return deleted;

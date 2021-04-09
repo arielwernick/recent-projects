@@ -118,9 +118,9 @@ public class DocumentImpl implements Document {
     //unclear if public comparator was allowed but this will compare documents to reorganize them
     public int compareTo(String word, Document m2) {
         int result;
-        if(this.wordCount(word) > m2.wordCount(word)){
+        if(this.wordCount(word) < m2.wordCount(word)){
             result = 1;
-        }else if(this.wordCount(word) < m2.wordCount(word)){
+        }else if(this.wordCount(word) > m2.wordCount(word)){
             result = -1;
         }else{
             result = 0;
