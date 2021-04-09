@@ -88,7 +88,7 @@ public class HashTableImpl<Key, Value> implements HashTable<Key, Value> {
         if (v == null) {
             loadFactor -= 1;
            // System.out.println("Slot to be palced in "+ slot);
-            System.out.println("Slot hashCode" + this.table[slot].k);
+           // System.out.println("Slot hashCode" + this.table[slot].k);
             if (this.table[slot].k.equals(k)) {
                 this.table[slot] = this.table[slot].next;
                 return null;

@@ -1,6 +1,7 @@
 package edu.yu.cs.com1320.project.stage3.impl;
 
 import edu.yu.cs.com1320.project.*;
+import edu.yu.cs.com1320.project.Stack;
 import edu.yu.cs.com1320.project.impl.HashTableImpl;
 import edu.yu.cs.com1320.project.impl.StackImpl;
 import edu.yu.cs.com1320.project.impl.TrieImpl;
@@ -11,10 +12,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 
 public class DocumentStoreImpl implements DocumentStore {
@@ -90,7 +88,9 @@ public class DocumentStoreImpl implements DocumentStore {
 
     private Document docInitializer(byte[] inputRead, DocumentFormat format, URI uri){
        Document doc;
-        if (format.equals(DocumentFormat.TXT)) {
+        if(format == null) {
+            throw new IllegalArgumentException();
+        } else if (format.equals(DocumentFormat.TXT)) {
             doc =  createTextDocument(uri,inputRead);
         }else if(format.equals(DocumentFormat.BINARY)) {
             doc =  createByteDocument(uri,inputRead);
@@ -232,8 +232,45 @@ public class DocumentStoreImpl implements DocumentStore {
         };
 
         List<Document> containsPrefix = trie.getAllWithPrefixSorted(keywordPrefix, comparator);
-        return containsPrefix;
+        Set<Document> setOfDocuments = new HashSet();
+        setOfDocuments.addAll(containsPrefix);
+        List<Document> listToReturn = new ArrayList<>();
+        listToReturn.addAll(setOfDocuments);
+        Comparator<Document> reSort = (o1, o2) -> {
+            int result = compareToPrefix(o1,o2,containsPrefix,keywordPrefix);
+            return result;
+        };
 
+        listToReturn.sort(reSort);
+        for(Document doc : listToReturn){
+            System.out.println(doc.getKey());
+            System.out.println(doc.getWords());
+        }
+        return listToReturn;
+
+    }
+
+    private int compareToPrefix(Document first, Document second, List<Document> coPrefix, String keywordPrefix){
+        if(prefixDocCount(first,coPrefix, keywordPrefix) < prefixDocCount(second,coPrefix, keywordPrefix)){
+           return 1;
+        }else if(prefixDocCount(first,coPrefix, keywordPrefix) > prefixDocCount(second,coPrefix,keywordPrefix)){
+            return -1;
+        }else{
+            return 0;
+        }
+    }
+    private int prefixDocCount(Document checker, List<Document> coPrefix, String keyWordPrefix){
+       int count = 0;
+        for(Document doc : coPrefix) {
+            if (doc.getKey() == checker.getKey()) {
+                for (String word : doc.getWords()) {
+                    if (word.subSequence(0, keyWordPrefix.length()).equals(keyWordPrefix)) {
+                        count += doc.wordCount(word);
+                    }
+                }
+            }
+        }
+        return count;
     }
 
     /**
