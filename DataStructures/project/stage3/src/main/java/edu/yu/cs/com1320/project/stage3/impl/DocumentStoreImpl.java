@@ -232,6 +232,8 @@ public class DocumentStoreImpl implements DocumentStore {
                     temp.push(fiveCommand);
                     tracker += 1;
                 }
+            }else{
+                throw new IllegalArgumentException();
             }
         }
         while (tracker >= 0) {
