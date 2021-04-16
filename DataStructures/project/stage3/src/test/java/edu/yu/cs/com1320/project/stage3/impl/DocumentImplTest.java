@@ -1,33 +1,81 @@
 package edu.yu.cs.com1320.project.stage3.impl;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class DocumentImplTest {
-    @Test
-    public void wordCountAndGetWordsTest() throws URISyntaxException {
-        DocumentImpl txtDoc = new DocumentImpl(new URI("placeholder"), " The!se ARE? sOme   W@o%$rds with^ s**ymbols (m)ixed [in]. Hope    this test test test test test test passes!");
-        txtDoc.getWords();
-        assertEquals(0, txtDoc.wordCount("bundle"));
+import edu.yu.cs.com1320.project.Utils;
 
-        assertEquals(1, txtDoc.wordCount("these"));
-        assertEquals(1, txtDoc.wordCount("WORDS"));
-        assertEquals(1, txtDoc.wordCount("S-Y-M-B-O-??-LS"));
-        assertEquals(1, txtDoc.wordCount("p@A$$sse$s"));
-        assertEquals(6, txtDoc.wordCount("tEst"));
-        Set<String> words = txtDoc.getWords();
-        assertEquals(12, words.size());
-        assertTrue(words.contains("some"));
-        DocumentImpl binaryDoc = new DocumentImpl(new URI("0110"), new byte[] {0,1,1,0});
-        assertEquals(0, binaryDoc.wordCount("anythingYouPutHereShouldBeZero"));
-        Set<String> words2 = binaryDoc.getWords();
-        assertEquals(0, words2.size());
+public class DocumentImplTest {
+    private URI textUri;
+    private String textString;
+
+    private URI binaryUri;
+    private byte[] binaryData;
+
+    @BeforeEach
+    public void setUp() throws Exception {
+        this.textUri = new URI("http://edu.yu.cs/com1320/txt");
+        this.textString = "This is text content. Lots of it.";
+
+        this.binaryUri = new URI("http://edu.yu.cs/com1320/binary");
+        this.binaryData = "This is a PDF, brought to you by Adobe.".getBytes();
+
     }
 
+    @Test
+    public void stage3WordCount() {
+        DocumentImpl textDocument = new DocumentImpl(this.textUri, this.textString);
+        assertEquals(1, textDocument.wordCount("This"));
+        assertEquals(0, textDocument.wordCount("blah"));
+    }
 
+    @Test
+    public void stage3CaseInsensitiveWordCount() {
+        DocumentImpl textDocument = new DocumentImpl(this.textUri, this.textString);
+        assertEquals(1, textDocument.wordCount("this"));
+        assertEquals(1, textDocument.wordCount("tHis"));
+    }
+
+    //stage 1 tests
+    @Test
+    public void testGetTextDocumentAsTxt() {
+        DocumentImpl textDocument = new DocumentImpl(this.textUri, this.textString);
+        assertEquals(this.textString, textDocument.getDocumentTxt());
+    }
+
+    @Test
+    public void testGetDocumentBinaryData() {
+        DocumentImpl binaryDocument = new DocumentImpl(this.binaryUri, this.binaryData);
+        assertArrayEquals(this.binaryData,binaryDocument.getDocumentBinaryData());
+    }
+
+    @Test
+    public void testGetTextDocumentTextHashCode() {
+        DocumentImpl textDocument = new DocumentImpl(this.textUri, this.textString);
+        int code = Utils.calculateHashCode(this.textUri, this.textString,null);
+        assertEquals(code, textDocument.hashCode());
+    }
+
+    @Test
+    public void testGetBinaryDocumentTextHashCode() {
+        DocumentImpl binaryDocument = new DocumentImpl(this.binaryUri, this.binaryData);
+        int code = Utils.calculateHashCode(this.binaryUri, null, this.binaryData);
+        assertEquals(code, binaryDocument.hashCode());
+    }
+
+    @Test
+    public void testGetTextDocumentKey() {
+        DocumentImpl textDocument = new DocumentImpl(this.textUri, this.textString);
+        assertEquals(this.textUri, textDocument.getKey());
+    }
+
+    @Test
+    public void testGetBinaryDocumentKey() {
+        DocumentImpl binaryDocument = new DocumentImpl(this.binaryUri, this.binaryData);
+        assertEquals(this.binaryUri, binaryDocument.getKey());
+    }
 }

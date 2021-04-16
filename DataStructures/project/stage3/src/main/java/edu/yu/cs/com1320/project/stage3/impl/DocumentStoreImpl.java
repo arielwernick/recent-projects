@@ -138,12 +138,14 @@ public class DocumentStoreImpl implements DocumentStore {
 
     private void deleteDocTrieReferences(Document previousDoc){
         Set<String> docsWords = new HashSet<>();
-        System.out.println(previousDoc.getDocumentTxt());
-        if (!previousDoc.getWords().isEmpty()){
-             docsWords = previousDoc.getWords();
-        }
-        for(String toDelete : docsWords){
-            trie.delete(toDelete, previousDoc);
+       // System.out.println(previousDoc.getDocumentTxt());
+        if(previousDoc !=null) {
+            if (!previousDoc.getWords().isEmpty()) {
+                docsWords = previousDoc.getWords();
+            }
+            for (String toDelete : docsWords) {
+                trie.delete(toDelete, previousDoc);
+            }
         }
     }
 
@@ -202,7 +204,8 @@ public class DocumentStoreImpl implements DocumentStore {
         Stack temp = new StackImpl();
         boolean found = false;
         int tracker = 0;
-        while (found == false || history.pop() != null) {
+        while (found == false) {
+
             Object five = history.peek();
             if (five instanceof CommandSet) {
                 setCommands = (CommandSet) history.pop();
@@ -296,8 +299,8 @@ public class DocumentStoreImpl implements DocumentStore {
 
         listToReturn.sort(reSort);
         for(Document doc : listToReturn){
-            System.out.println(doc.getKey());
-            System.out.println(doc.getWords());
+            //System.out.println(doc.getKey());
+           // System.out.println(doc.getWords());
         }
         return listToReturn;
 
@@ -317,8 +320,11 @@ public class DocumentStoreImpl implements DocumentStore {
         for(Document doc : coPrefix) {
             if (doc.getKey() == checker.getKey()) {
                 for (String word : doc.getWords()) {
-                    if (word.subSequence(0, keyWordPrefix.length()).equals(keyWordPrefix)) {
-                        count += doc.wordCount(word);
+                    if(word.length() >= keyWordPrefix.length()) {
+
+                        if (word.subSequence(0, keyWordPrefix.length()).equals(keyWordPrefix)) {
+                            count += doc.wordCount(word);
+                        }
                     }
                 }
             }

@@ -104,7 +104,11 @@ public class TrieImpl<Value> implements Trie<Value> {
         //find the node we are looking for
         Node found = getTheBuilder(key);
 
+        /*
         if(found.val == null){
+            return emptyList;
+        }*/
+        if(found == null || found.val ==null){
             return emptyList;
         }
 
@@ -138,7 +142,20 @@ public class TrieImpl<Value> implements Trie<Value> {
             } else {
                 slot = c - 21;
             }
-            if (builder.links.length == 1 || builder == null) {
+
+            //bug fix here - builder null needs a different method than builder having been deleted
+            if(builder == null ){
+                builder = new Node();
+                builder.val = emptyList;
+                builder.links = new Node[1];
+                depth = 0;
+                return builder;
+
+            }
+
+
+            if ( builder.links.length == 1) {
+
                 builder.val = emptyList;
                 builder.links = new Node[1];
                 depth = 0;
@@ -279,7 +296,7 @@ public class TrieImpl<Value> implements Trie<Value> {
             }
             if (cleanedUp) {
                 romba.links = new Node[1];
-                System.out.println(getTheBuilder(key).links.length);
+              //  System.out.println(getTheBuilder(key).links.length);
             }
 
     }
