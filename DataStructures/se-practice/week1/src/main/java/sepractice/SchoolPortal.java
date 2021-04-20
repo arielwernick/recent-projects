@@ -76,6 +76,10 @@ D)ListOfStudents
         return null;
     }
 
+    public Patron AdminLogIn(String emailAddress, String password){
+        return null;
+    }
+
 
 
     //student course management methods
@@ -95,7 +99,8 @@ D)ListOfStudents
      student.dropCourse(course);
  }
 
- public String getListOfCoursesTaking (){
+ //method for instructors and students to see courses which they are taking
+ public String getListOfCoursesofPatron (){
      Set<Course> courses = new HashSet();
      String returnString = "";
      if(user instanceof Student){
@@ -110,7 +115,36 @@ D)ListOfStudents
      return returnString;
  }
 
- //administrator
+ public String getStudentTranscript(){
+     return null;
+ }
+
+ public String getStudentGradeLevel(){
+     return null;
+ }
+
+
+
+
+ //administrator course creation
+    public void createCourse(String title, Instructor instructor, int courseSize, int creditsAmount, int timesOfMeeting, Set<Course> preReq, Set<Course> coRequisites, String attribute){
+        Course newCourse = new Course(title,instructor, courseSize,creditsAmount,timesOfMeeting,preReq,coRequisites,attribute);
+        courseList.add(newCourse);
+ }
+
+    public void courseDeletion(){
+
+    }
+
+
+  //search course catalog
+    public String findCourse(String crn){
+        return null;
+    }
+
+    public String allCoursesOffered(){
+        return null;
+    }
 
 
 }
