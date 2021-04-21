@@ -1,4 +1,5 @@
 package sepractice;
+import java.util.HashSet;
 import java.util.Set;
 
 
@@ -15,16 +16,16 @@ public class Course {
       F) semester on campus/ level
       G) course Attributes
      */
-    String courseTitle;
-    long crn;
-    Instructor courseInstructor;
-    int courseSize;
-    Set<Student> studentsInClass;
-    int creditsAmount;
-    int timesOfMeeting;
-    Set<Course> preRequisites;
-    Set<Course> coRequisites;
-    String attribute;
+    private String courseTitle;
+    private long crn;
+    private Instructor courseInstructor;
+    private int courseSize;
+    private Set<Student> studentsInClass = new HashSet<>();
+    private int creditsAmount;
+     private int timesOfMeeting;
+    private Set<Course> preRequisites;
+    private Set<Course> coRequisites;
+    private String attribute;
 
     public Course(String title, Instructor instructor, int courseSize, int creditsAmount, int timesOfMeeting, Set<Course> preReq, Set<Course> coRequisites, String attribute){
         this.courseTitle = title;
@@ -84,7 +85,7 @@ public class Course {
 
 
     public boolean addStudent(Student student){
-
+        studentsInClass.add(student);
         return true;
     }
 
@@ -94,5 +95,29 @@ public class Course {
 
     public Set<Student> getStudentsInClass() {
         return studentsInClass;
+    }
+
+    public Instructor getCourseInstructor() {
+        return courseInstructor;
+    }
+
+    public void setCourseInstructor(Instructor courseInstructor) {
+        this.courseInstructor = courseInstructor;
+    }
+
+    public int getCreditsAmount() {
+        return creditsAmount;
+    }
+
+    public void setCreditsAmount(int creditsAmount) {
+        this.creditsAmount = creditsAmount;
+    }
+
+    public int getTimesOfMeeting() {
+        return timesOfMeeting;
+    }
+
+    public void setTimesOfMeeting(int timesOfMeeting) {
+        this.timesOfMeeting = timesOfMeeting;
     }
 }

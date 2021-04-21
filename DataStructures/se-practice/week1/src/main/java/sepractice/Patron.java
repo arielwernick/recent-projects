@@ -2,21 +2,18 @@ package sepractice;
 public class Patron {
 
 
-    String firstName;
-    String lastName;
-    Long idNumber;
-    String emailAddress;
-    String phoneNumber;
-    String password;
+    private String firstName;
+    private String lastName;
+    private Long idNumber;
+    private String emailAddress;
+    private String phoneNumber;
+   private String password;
 
-    public static void main(String[] args) {
-        double randomnnumbers = Math.random();
-        System.out.println(randomnnumbers);
-    }
+
     public Patron(String firstName, String lastName, String emailAddress, String password, String phoneNumber){
         this.firstName = firstName;
         this.lastName = lastName;
-        setIDNumber();
+        idNumber = setIDNumber();
         this.emailAddress = emailAddress;
         this.phoneNumber = phoneNumber;
         setPassword(password);

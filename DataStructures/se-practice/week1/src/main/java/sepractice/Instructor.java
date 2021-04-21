@@ -1,5 +1,6 @@
 package sepractice;
 
+import java.util.HashSet;
 import java.util.Set;
 
 public class Instructor extends Patron {
@@ -21,8 +22,8 @@ public class Instructor extends Patron {
       I) email address
       H)
      */
-    String department;
-    Set<Course> courseList;
+    private String department;
+   private Set<Course> courseList = new HashSet<>();
 
     public Instructor(String firstName, String lastName, String emailAddress, String password,String phoneNumber, String department){
         super(firstName,lastName,emailAddress,password,phoneNumber);

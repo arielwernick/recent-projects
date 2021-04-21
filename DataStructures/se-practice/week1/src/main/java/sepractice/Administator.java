@@ -22,11 +22,11 @@ public class Administator extends Patron {
 
             */
 
-    String firstName;
-    String lastName;
-    Long idNumber;
-    String emailAddress;
-    Long phoneNumber;
+    private String firstName;
+    private String lastName;
+    private Long idNumber;
+    private String emailAddress;
+    private Long phoneNumber;
 
     public Administator(String firstName, String lastName, String emailAddress,String password, String phoneNumber) {
         super(firstName, lastName, emailAddress,password, phoneNumber);

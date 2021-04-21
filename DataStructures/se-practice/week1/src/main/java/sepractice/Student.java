@@ -1,6 +1,7 @@
 package sepractice;
 import org.w3c.dom.Document;
 
+import java.util.HashSet;
 import java.util.Set;
 
 public class Student  extends Patron {
@@ -21,9 +22,9 @@ public class Student  extends Patron {
       H) credits taken
      */
 
-    int classStanding;
-    Set<Course> enrolledClasses;
-    String semesterOnCampus;
+    private int classStanding;
+    private Set<Course> enrolledClasses = new HashSet<>();
+    private String semesterOnCampus;
     private Document transcript;
 
 
@@ -63,6 +64,7 @@ public class Student  extends Patron {
     }
 
     public String setSemesterOnCampusLevel(String semesterOncampus){
+        this.semesterOnCampus= semesterOncampus;
         //switch, freshman/ junior/ sophmore/ senior/grad student - throw error otherwise
         return null;
     }
