@@ -258,7 +258,7 @@ public class DocumentStoreImpl implements DocumentStore {
      */
     public List<Document> search(String keyword) {
         Comparator<Document> comparator = (o1, o2) -> {
-            int result = o1.compareTo(keyword, o2);
+            int result = compareAmountOfWords(keyword,o1,o2);
             return result;
         };
 
@@ -283,7 +283,7 @@ public class DocumentStoreImpl implements DocumentStore {
     public List<Document> searchByPrefix(String keywordPrefix) {
 
         Comparator<Document> comparator = (o1, o2) -> {
-            int result = o1.compareTo(keywordPrefix, o2);
+            int result = compareAmountOfWords(keywordPrefix,o1,o2);
             return result;
         };
 
@@ -304,6 +304,19 @@ public class DocumentStoreImpl implements DocumentStore {
         }
         return listToReturn;
 
+    }
+
+    //added compareTo method
+    private int compareAmountOfWords(String word,Document m1, Document m2) {
+        int result;
+        if(m1.wordCount(word) < m2.wordCount(word)){
+            result = 1;
+        }else if(m1.wordCount(word) > m2.wordCount(word)){
+            result = -1;
+        }else{
+            result = 0;
+        }
+        return result;
     }
 
     private int compareToPrefix(Document first, Document second, List<Document> coPrefix, String keywordPrefix){

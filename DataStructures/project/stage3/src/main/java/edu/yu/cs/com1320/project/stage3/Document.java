@@ -32,5 +32,5 @@ public interface Document
      */
     Set<String> getWords();
 
-    int compareTo( String keyWord, Document m2);
+
 }
