@@ -184,6 +184,9 @@ public class DocumentStoreImpl implements DocumentStore {
     private boolean deleteForUndo(URI uri) {
         Document previousDoc = (Document) docTable.get(uri);
         deleteDocTrieReferences(previousDoc);
+        previousDoc.setLastUseTime((1));
+        docHeap.reHeapify(previousDoc);
+        docHeap.remove();
         docTable.put(uri, null);
         return true;
     }
@@ -192,10 +195,12 @@ public class DocumentStoreImpl implements DocumentStore {
         if(!checkForByteSpace()) {
             //insert for document deletion
             Document toDelete = docHeap.remove();
+            docHeap.insert(toDelete);
             deleteDocument(toDelete.getKey());
         }
         if(!checkForSpace()){
             Document toDelete = docHeap.remove();
+            docHeap.insert(toDelete);
             deleteDocument(toDelete.getKey());
         }
         docTable.put(uri,doc);
@@ -436,6 +441,7 @@ public class DocumentStoreImpl implements DocumentStore {
             GenericCommand command = new GenericCommand(doc.getKey(),uri1 ->putForUndo(doc.getKey(),save));
             deletedAllCommand.addCommand(command);
         }
+        history.push(deletedAllCommand);
         return deleted;
     }
 

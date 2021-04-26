@@ -281,6 +281,8 @@ public class UndoTest {
     @Test
     public void undoOverwriteByURI() throws Exception {
         DocumentStoreImpl dsi = createStoreAndPutAll();
+        dsi.setMaxDocumentCount(4);
+        dsi.setMaxDocumentBytes(200);
         String replacement = "this is a replacement for txt2";
         dsi.putDocument(new ByteArrayInputStream(replacement.getBytes()),this.uri2, DocumentStore.DocumentFormat.TXT);
         assertTrue(dsi.getDocument(this.uri2).getDocumentTxt().equals(replacement),"should've returned replacement text");

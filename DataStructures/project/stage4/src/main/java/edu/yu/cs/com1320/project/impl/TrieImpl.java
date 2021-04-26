@@ -150,7 +150,9 @@ public class TrieImpl<Value> implements Trie<Value> {
                 return builder;
             }
             if (builder.links.length == 1 ) {
-                builder.val = emptyList;
+                if (builder.val == null){
+                    builder.val = emptyList;
+                }
                 builder.links = new Node[1];
                 depth = 0;
                 return builder;

@@ -6,6 +6,7 @@ import edu.yu.cs.com1320.project.stage4.Document;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.GenericArrayType;
+import java.util.NoSuchElementException;
 
 public class MinHeapImpl<E extends Comparable<E>> extends MinHeap<E> {
 
@@ -13,7 +14,7 @@ public class MinHeapImpl<E extends Comparable<E>> extends MinHeap<E> {
     public MinHeapImpl(){
 
 
-        this.elements = (E[]) Array.newInstance(Comparable.class,25);
+        this.elements = (E[]) Array.newInstance(Comparable.class,5);
     }
 
     @Override
@@ -33,14 +34,14 @@ public class MinHeapImpl<E extends Comparable<E>> extends MinHeap<E> {
                 return i;
             }
         }
-        throw new IndexOutOfBoundsException();
+        throw new NoSuchElementException();
     }
 
     @Override
     protected void doubleArraySize() {
         int previousSize = this.elements.length;
         //not sure if this is the correct method for doing this
-        E[]  doubled = (E[]) new Object[previousSize *2 ];
+        E[]  doubled = (E[]) Array.newInstance(Comparable.class,previousSize *2);;
 
         for(int i = 0; i < previousSize; i++) {
             if (this.elements[i] != null) {
