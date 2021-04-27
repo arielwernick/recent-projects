@@ -72,6 +72,7 @@ public class DocumentStoreImpl implements DocumentStore {
         if(!checkForByteSpace()) {
             //insert for document deletion
             Document toDelete = docHeap.remove();
+            docHeap.insert(toDelete);
             deleteDocument(toDelete.getKey());
         }
         if(!checkForSpace()){
@@ -146,6 +147,9 @@ public class DocumentStoreImpl implements DocumentStore {
     //retrieving a document from the
     public Document getDocument(URI uri) {
         Document get = (Document) docTable.get(uri);
+        if(get != null){
+            toReheap(get);
+        }
         return get;
     }
 
@@ -206,6 +210,7 @@ public class DocumentStoreImpl implements DocumentStore {
         docTable.put(uri,doc);
         doc.setLastUseTime(System.nanoTime());
         docHeap.insert(doc);
+        docHeap.reHeapify(doc);
         for(String word : doc.getWords()){
             trie.put(word,doc);
         }
@@ -325,6 +330,9 @@ public class DocumentStoreImpl implements DocumentStore {
         returnDocuments.clear();
         returnDocuments.addAll(toReturn);
         returnDocuments.sort(comparator);
+        for(Document doc: returnDocuments){
+            toReheap(doc);
+        }
 
        return returnDocuments;
     }
@@ -355,6 +363,9 @@ public class DocumentStoreImpl implements DocumentStore {
         };
 
         listToReturn.sort(reSort);
+        for(Document doc: listToReturn){
+            toReheap(doc);
+        }
         return listToReturn;
 
     }
@@ -501,6 +512,11 @@ public class DocumentStoreImpl implements DocumentStore {
 
         return true;
 
+    }
+
+    private void toReheap(Document doc){
+        doc.setLastUseTime(System.nanoTime());
+        docHeap.reHeapify(doc);
     }
 
 

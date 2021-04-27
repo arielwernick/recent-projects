@@ -10,6 +10,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -311,5 +312,22 @@ public class DocumentStoreImplTest {
         assertEquals(false,store.deleteDocument(this.uri1),"failed to return false when trying to delete that which was already deleted");
         //should return false if I try to delete something that was never there to begin with
         assertEquals(false,store.deleteDocument(this.uri2),"failed to return false when trying to delete that which was never there to begin with");
+    }
+
+    @Test
+    public void testNoSpaceDelete() throws IOException {
+        DocumentStore store = new DocumentStoreImpl();
+        store.setMaxDocumentCount(3);
+        store.setMaxDocumentBytes(300);
+        store.putDocument(new ByteArrayInputStream(this.txt1.getBytes()),this.uri1, DocumentStore.DocumentFormat.TXT);
+        store.putDocument(new ByteArrayInputStream(this.txt2.getBytes()),this.uri2, DocumentStore.DocumentFormat.TXT);
+        //store.putDocument(new ByteArrayInputStream(this.txt3.getBytes()),this.uri3, DocumentStore.DocumentFormat.TXT);
+        store.search("doc1");
+        System.out.println(store.getDocument(uri1).getDocumentTxt());
+        store.putDocument(new ByteArrayInputStream(this.txt3.getBytes()),this.uri3, DocumentStore.DocumentFormat.TXT);
+        System.out.println(store.getDocument(uri1).getLastUseTime());
+        System.out.println(store.getDocument(uri2));
+
+
     }
 }
