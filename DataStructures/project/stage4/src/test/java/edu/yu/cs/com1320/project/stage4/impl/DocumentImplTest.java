@@ -1,6 +1,5 @@
 package edu.yu.cs.com1320.project.stage4.impl;
 
-import edu.yu.cs.com1320.project.impl.MinHeapImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -13,8 +12,6 @@ import edu.yu.cs.com1320.project.Utils;
 public class DocumentImplTest {
     private URI textUri;
     private String textString;
-    private URI textUri2;
-    private String textString2;
 
     private URI binaryUri;
     private byte[] binaryData;
@@ -27,10 +24,16 @@ public class DocumentImplTest {
         this.binaryUri = new URI("http://edu.yu.cs/com1320/binary");
         this.binaryData = "This is a PDF, brought to you by Adobe.".getBytes();
 
-        this.textUri2 = new URI("http://edu.yu.cs/com1320/txttwo");
-        this.textString2 = "this is the text of text two that I am seeing.";
-
     }
+
+    @Test
+    public void stage4TestSetGetLastUseTime(){
+        long start = System.nanoTime();
+        DocumentImpl doc = new DocumentImpl(this.binaryUri, this.binaryData);
+        doc.setLastUseTime(System.nanoTime());
+        assertTrue(start < doc.getLastUseTime(),"last use time should've been > " + start);
+    }
+
 
     @Test
     public void stage3WordCount() {
@@ -83,21 +86,5 @@ public class DocumentImplTest {
     public void testGetBinaryDocumentKey() {
         DocumentImpl binaryDocument = new DocumentImpl(this.binaryUri, this.binaryData);
         assertEquals(this.binaryUri, binaryDocument.getKey());
-    }
-
-    @Test
-    public void testCompareTo(){
-        DocumentImpl textDocument = new DocumentImpl(this.textUri, this.textString);
-        DocumentImpl textDocument2 = new DocumentImpl(this.textUri2,this.textString2);
-        textDocument.setLastUseTime(50);
-        textDocument2.setLastUseTime(100);
-        System.out.println(textDocument.compareTo(textDocument2));
-        MinHeapImpl docHeap = new MinHeapImpl();
-        docHeap.insert(textDocument);
-        docHeap.insert(textDocument2);
-        textDocument.setLastUseTime(1000);
-        docHeap.reHeapify(textDocument);
-        assertEquals(docHeap.remove(),textDocument2);
-
     }
 }

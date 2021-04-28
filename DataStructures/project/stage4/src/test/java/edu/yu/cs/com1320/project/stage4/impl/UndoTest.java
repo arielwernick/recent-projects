@@ -32,8 +32,6 @@ public class UndoTest {
 
     private DocumentStoreImpl createStoreAndPutOne() throws IOException {
         DocumentStoreImpl dsi = new DocumentStoreImpl();
-        dsi.setMaxDocumentBytes(500);
-        dsi.setMaxDocumentCount(4);
         ByteArrayInputStream bas1 = new ByteArrayInputStream(this.txt1.getBytes());
         dsi.putDocument(bas1,this.uri1, DocumentStore.DocumentFormat.TXT);
         return dsi;
@@ -41,8 +39,6 @@ public class UndoTest {
 
     private DocumentStoreImpl createStoreAndPutAll() throws IOException {
         DocumentStoreImpl dsi = new DocumentStoreImpl();
-        dsi.setMaxDocumentCount(4);
-        dsi.setMaxDocumentBytes(200);
         //doc1
         ByteArrayInputStream bas = new ByteArrayInputStream(this.txt1.getBytes());
         dsi.putDocument(bas,this.uri1, DocumentStore.DocumentFormat.TXT);
@@ -134,7 +130,7 @@ public class UndoTest {
         //check that doc2 is back by keyword
         results = dsi.search(keyword1);
         assertEquals(1,results.size(),"doc2 should be back - List size should be 1");
-      //  assertEquals("doc2 should be back",results.get(0),this.txt2);
+        assertEquals(this.txt2,results.get(0).getDocumentTxt(),"doc2 should be back");
         //check that doc2 is back by URI but doc 1 is still null- use protected method
         assertNotNull(dsi.getDocument(this.uri2),"document with URI " + this.uri2 + "should be back");
         assertNull(dsi.getDocument(this.uri1),"document with URI " + this.uri1 + "should still be null");
@@ -252,7 +248,6 @@ public class UndoTest {
         Document returned = dsi.getDocument(this.uri2);
         assertEquals(this.uri2,returned.getKey(),"should've returned doc with uri2");
         dsi.undo(this.uri2);
-        dsi.getDocument(this.uri2);
         assertNull(dsi.getDocument(this.uri2),"should've returned null - put was undone");
     }
 
@@ -263,7 +258,6 @@ public class UndoTest {
         dsi.deleteDocument(this.uri3);
         assertNull(dsi.getDocument(this.uri3),"doc should've been deleted");
         dsi.undo(this.uri3);
-        dsi.getDocument(this.uri3).getKey().equals(this.uri3);
         assertTrue(dsi.getDocument(this.uri3).getKey().equals(this.uri3),"should return doc3");
     }
 
@@ -281,8 +275,6 @@ public class UndoTest {
     @Test
     public void undoOverwriteByURI() throws Exception {
         DocumentStoreImpl dsi = createStoreAndPutAll();
-        dsi.setMaxDocumentCount(4);
-        dsi.setMaxDocumentBytes(200);
         String replacement = "this is a replacement for txt2";
         dsi.putDocument(new ByteArrayInputStream(replacement.getBytes()),this.uri2, DocumentStore.DocumentFormat.TXT);
         assertTrue(dsi.getDocument(this.uri2).getDocumentTxt().equals(replacement),"should've returned replacement text");

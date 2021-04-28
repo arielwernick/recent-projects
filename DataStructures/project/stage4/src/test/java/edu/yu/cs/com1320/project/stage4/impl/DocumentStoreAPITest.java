@@ -34,6 +34,16 @@ public class DocumentStoreAPITest {
         }
         assertTrue(publicMethodCount == 11);
     }
+    //STAGE 4 TESTS
+    @Test
+    public void stage4SetMaxDocumentCountExists(){
+        new DocumentStoreImpl().setMaxDocumentCount(1);
+    }
+    @Test
+    public void stage4SetMaxDocumentBytesExists(){
+        new DocumentStoreImpl().setMaxDocumentBytes(1);
+    }
+    //STAGE 3 TESTS
 
     @Test
     public void stage3SearchExists(){
@@ -114,7 +124,6 @@ public class DocumentStoreAPITest {
         try {
             new DocumentStoreImpl().deleteDocument(new URI("hi"));
         } catch (Exception e) {}
-
     }
 
 }

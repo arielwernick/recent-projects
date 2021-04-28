@@ -24,8 +24,8 @@ public class DocumentStoreImpl implements DocumentStore {
     private Stack history = new StackImpl<Undoable>();
     Trie<Document> trie = new TrieImpl<Document>();
     MinHeap<Document> docHeap = new MinHeapImpl<Document>();
-    int maxDocumentCount;
-    int maxDocBytesCount;
+    int maxDocumentCount = Integer.MAX_VALUE;
+    int maxDocBytesCount = Integer.MAX_VALUE;
     Set<URI> keyRing = new HashSet<>();
 
     /**
